@@ -12,7 +12,7 @@ Article_hidder =
 		new this[type](btn_msg_close, btn_msg_open);	
 	},
 
-	class: class
+	classic: class
 	{
 		constructor(btn_msg_close, btn_msg_open)
 		{
@@ -62,8 +62,7 @@ Article_hidder =
 	},
 }
 
-Article_hidder.with_hideback = class extends Article_hidder.class {}
-Article_hidder.without_hideback = class extends Article_hidder.class
+Article_hidder.without_hideback = class extends Article_hidder.classic
 {
 	change_state(is_hidden, btn)
 	{
@@ -75,7 +74,7 @@ Article_hidder.without_hideback = class extends Article_hidder.class
 }
 
 Article_hidder.run(
-	type = 'with_hideback',
+	type = 'classic',
 	btn_msg_close = 'Fermer',
 	btn_msg_open = 'En savoir plus...'
 );

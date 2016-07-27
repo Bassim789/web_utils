@@ -7,67 +7,80 @@ Author: Bassim Matar
 
 Article_hidder =
 {
-	config_each_article()
+	run(type, btn_msg_close, btn_msg_open)
 	{
-		var that = this;
-		$('.article_hidder').each(function()
-		{
-			$(this).hide();
-			that.add_btn_to(this);
-		});
+		new this[type](btn_msg_close, btn_msg_open);	
 	},
 
-	add_btn_to(article)
+	class: class
 	{
-		$(article).after($('<a>',
+		constructor(btn_msg_close, btn_msg_open)
 		{
-			class: 'article_hidder_btn',
-			html: this.btn_msg_open,
-			'data-is_hidden': true
-		}));
-	},
+			this.btn_msg_close = btn_msg_close;
+			this.btn_msg_open = btn_msg_open;
 
-	change_state(is_hidden, btn)
-	{
-		this.remove_if_no_hide_back(btn);
+			this.config_each_article();
+			this.bind_event();
+		}
 
-		$(btn)
-			.data('is_hidden', !is_hidden)
-			.html(is_hidden ? this.btn_msg_close : this.btn_msg_open)
-			.parent().find('.article_hidder')
-			.css('display', is_hidden ? 'block' : 'none');
-	},
-
-	remove_if_no_hide_back(btn)
-	{
-		if (!this.hide_back)
+		config_each_article()
 		{
-			$(btn).hide();
+			var that = this;
+			$('.article_hidder').each(function()
+			{
+				$(this).hide();
+				that.add_btn_to(this);
+			});
+		}
+
+		add_btn_to(article)
+		{
+			$(article).after($('<a>',
+			{
+				class: 'article_hidder_btn',
+				html: this.btn_msg_open,
+				'data-is_hidden': true
+			}));
+		}
+
+		change_state(is_hidden, btn)
+		{
+			$(btn)
+				.data('is_hidden', !is_hidden)
+				.html(is_hidden ? this.btn_msg_close : this.btn_msg_open)
+				.parent().find('.article_hidder')
+				.css('display', is_hidden ? 'block' : 'none');
+		}
+
+		bind_event()
+		{
+			var that = this;
+			$('.article_hidder_btn').on('click', function()
+			{
+				that.change_state($(this).data('is_hidden'), this);
+			});
 		}
 	},
+}
 
-	bind_event()
+Article_hidder.with_hideback = class extends Article_hidder.class
+{
+	
+}
+
+Article_hidder.without_hideback = class extends Article_hidder.class
+{
+	change_state(is_hidden, btn)
 	{
-		var that = this;
-		$('.article_hidder_btn').unbind('click').on('click', function()
-		{
-			that.change_state($(this).data('is_hidden'), this);
-		});
-	},
-
-	init(hide_back, btn_msg_close, btn_msg_open)
-	{
-		this.hide_back = hide_back;
-		this.btn_msg_close = btn_msg_close;
-		this.btn_msg_open = btn_msg_open;
-
-		this.config_each_article();
-		this.bind_event();
+		$(btn)
+			.hide()
+			.parent().find('.article_hidder')
+			.show();
 	}
 }
 
-Article_hidder.init(
-	hide_back = true,
+Article_hidder.run(
+	type = 'without_hideback',
 	btn_msg_close = 'Fermer',
 	btn_msg_open = 'En savoir plus...'
 );

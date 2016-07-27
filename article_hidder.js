@@ -18,7 +18,6 @@ Article_hidder =
 		{
 			this.btn_msg_close = btn_msg_close;
 			this.btn_msg_open = btn_msg_open;
-
 			this.config_each_article();
 			this.bind_event();
 		}
@@ -63,11 +62,7 @@ Article_hidder =
 	},
 }
 
-Article_hidder.with_hideback = class extends Article_hidder.class
-{
-	
-}
-
+Article_hidder.with_hideback = class extends Article_hidder.class {}
 Article_hidder.without_hideback = class extends Article_hidder.class
 {
 	change_state(is_hidden, btn)

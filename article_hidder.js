@@ -80,7 +80,7 @@ Article_hidder.without_hideback = class extends Article_hidder.class
 }
 
 Article_hidder.run(
-	type = 'without_hideback',
+	type = 'with_hideback',
 	btn_msg_close = 'Fermer',
 	btn_msg_open = 'En savoir plus...'
 );

@@ -26,19 +26,17 @@ Article_hidder =
 		{
 			class: 'article_hidder_btn',
 			html: this.btn_msg_open,
-			'data-is_hidden': false
+			'data-is_hidden': true
 		}));
 	},
 
 	change_state(is_hidden, btn)
 	{
-		console.log(is_hidden);
-
 		$(btn)
 			.data('is_hidden', !is_hidden)
-			.html(is_hidden ? this.btn_msg_open : this.btn_msg_close)
+			.html(is_hidden ? this.btn_msg_close : this.btn_msg_open)
 			.parent().find('.article_hidder')
-			.css('display', is_hidden ? 'none' : 'block')
+			.css('display', is_hidden ? 'block' : 'none')
 	},
 
 	bind_event()

@@ -1,46 +1,54 @@
-"use strict";
-
 /*
-Article hidder class to open and close article hidden part
-Wrap the hidden part in a div with class article_hidder
-A btn with class article_hidder_btn is created below the hidden part
+Read_more class to open and close article hidden part
+Wrap the hidden part in a div or span with class read_more
+A btn with class read_more_btn is created below the hidden part
 Author: Bassim Matar
 */
 
-var Article_hidder = {};
+"use strict";
+var Read_more = {};
 
-Article_hidder.run = function(type, btn_msg_close, btn_msg_open)
+Read_more.run = function(type, btn_msg_close, btn_msg_open)
 {
 	new this[type](btn_msg_close, btn_msg_open);	
 }
 
-Article_hidder.classic = class
+Read_more.classic = class
 {
 	constructor(btn_msg_close, btn_msg_open)
 	{
 		this.btn_msg_close = btn_msg_close;
 		this.btn_msg_open = btn_msg_open;
 		this.config_each_article();
-		this.bind_event();
 	}
 
 	config_each_article()
 	{
 		var that = this;
-		$('.article_hidder').each(function()
+		$('.read_more').each(function()
 		{
-			$(this).hide();
+			$(this).css('display', 'inline-block').hide();
 			that.add_btn_to(this);
 		});
 	}
 
 	add_btn_to(article)
 	{
+		var that = this;
 		$(article).after($('<a>',
 		{
-			class: 'article_hidder_btn',
+			class: 'read_more_btn',
 			html: this.btn_msg_open,
-			'data-is_hidden': true
+			'data-is_hidden': true,
+			css: {
+				cursor: 'pointer',
+				textDecoration: 'underline'
+			},
+			on: {
+				click: function(){
+					that.change_state($(this).data('is_hidden'), this);		
+				}
+			}
 		}));
 	}
 
@@ -49,29 +57,20 @@ Article_hidder.classic = class
 		$(btn)
 			.data('is_hidden', !is_hidden)
 			.html(is_hidden ? this.btn_msg_close : this.btn_msg_open)
-			.parent().find('.article_hidder')
-			.css('display', is_hidden ? 'block' : 'none');
-	}
-
-	bind_event()
-	{
-		var that = this;
-		$('.article_hidder_btn').on('click', function()
-		{
-			that.change_state($(this).data('is_hidden'), this);
-		});
+			.parent().find('.read_more')
+			.css('display', is_hidden ? 'initial' : 'none');
 	}
 }
 
-Article_hidder.no_hideback = class extends Article_hidder.classic
+Read_more.no_hideback = class extends Read_more.classic
 {
 	change_state(is_hidden, btn)
 	{
 		$(btn)
 			.hide()
-			.parent().find('.article_hidder')
-			.show();
+			.parent().find('.read_more')
+			.css('display', 'initial');
 	}
 }
 
-Article_hidder.run('classic', 'Fermer', 'En savoir plus...');
+Read_more.run('classic', 'Fermer', 'En savoir plus...');

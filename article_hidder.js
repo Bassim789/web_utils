@@ -25,12 +25,15 @@ Article_hidder =
 		$(article).after($('<a>',
 		{
 			class: 'article_hidder_btn',
-			html: this.btn_msg_open
+			html: this.btn_msg_open,
+			'data-is_hidden': false
 		}));
 	},
 
 	change_state(is_hidden, btn)
 	{
+		console.log(is_hidden);
+
 		$(btn)
 			.data('is_hidden', !is_hidden)
 			.html(is_hidden ? this.btn_msg_open : this.btn_msg_close)

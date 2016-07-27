@@ -1,10 +1,3 @@
-/*
-Read_more class to open and close article hidden part
-Wrap the hidden part in a div or span with class read_more
-A btn with class read_more_btn is created below the hidden part
-Author: Bassim Matar
-*/
-
 "use strict";
 var Read_more = {};
 

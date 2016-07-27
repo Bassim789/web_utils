@@ -1,5 +1,5 @@
 /*
-Article hidder class -> open and close article hidden part
+Article hidder class to open and close article hidden part
 Wrap the hidden part in a div with class article_hidder
 A btn with class article_hidder_btn is created below the hidden part
 Author: Bassim Matar

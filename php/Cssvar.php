@@ -1,6 +1,8 @@
 <?php
 class Cssvar
 {
+	var $global_var = [];
+
 	function get_css_var($css)
 	{
 		$css_var_array = [];
@@ -67,28 +69,48 @@ class Cssvar
 
 	function process_file($filename)
 	{
+		$css_var_array = [];
 		$css = file_get_contents($filename);
 		if (strpos($css, '$cssvar') !== false)
 		{
 			$css_var_array = self::get_css_var($css);
-			$css = self::translate_css($css, $css_var_array);
-			file_put_contents($filename, $css);
 		}
+		$css_var_total = $css_var_array + $this->global_var;
+		$css = self::translate_css($css, $css_var_total);
+		file_put_contents($filename, $css);
+		var_dump($css_var_total);
 	}
 
-	function process_all($path)
+	function process_folder($path)
 	{
 		foreach (glob($path.'/*') as $key => $file)
 		{
 			if (is_dir($file))
 			{
-				self::process_all($file);
+				self::process_folder($file);
 			}
 			else if (substr($file, 0, 3) == 'css')
 			{
 				self::process_file($file);
 			}
 		}
+	}
+
+	function get_global_var($filename)
+	{
+		$file = file_get_contents($filename);
+		foreach (explode("\n", $file) as $key => $line)
+		{
+			if (strpos($line, ':') !== false)
+			{
+				$line = trim($line);
+				$two_part = explode(":", $line);
+				$var = trim($two_part[0]);
+				$val = trim(trim($two_part[1]), ';');
+				$this->global_var[$var] = $val;
+			}
+		}
+		//var_dump($this->global_var);
 	}
 }
 ?>

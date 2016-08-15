@@ -78,7 +78,6 @@ class Cssvar
 		$css_var_total = $css_var_array + $this->global_var;
 		$css = self::translate_css($css, $css_var_total);
 		file_put_contents($filename, $css);
-		var_dump($css_var_total);
 	}
 
 	function process_folder($path)
@@ -110,7 +109,6 @@ class Cssvar
 				$this->global_var[$var] = $val;
 			}
 		}
-		//var_dump($this->global_var);
 	}
 }
 ?>

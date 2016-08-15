@@ -2,10 +2,24 @@
 class Cssvar
 {
 	var $global_var = [];
+	var $local_var = [];
+	var $total_var = [];
 
-	function get_css_var($css)
+	function load_global_var($filename)
 	{
-		$css_var_array = [];
+		$file = file_get_contents($filename);
+		foreach (explode("\n", $file) as $key => $line)
+		{
+			if (strpos($line, ':') !== false)
+			{
+				$res = self::get_val_var($line);
+				$this->global_var[$res[0]] = $res[1];
+			}
+		}
+	}
+
+	function load_local_var($css)
+	{
 		$start_css_var = strpos($css, '$cssvar{') + 9;
 		$end_css_var = strpos($css, '}');
 		$len_css_var = $end_css_var - $start_css_var;
@@ -15,19 +29,25 @@ class Cssvar
 		{
 			if (strpos($cssvar, ':') !== false)
 			{
-				$cssvar = trim($cssvar);
-				$two_part = explode(":", $cssvar);
-				$var = trim($two_part[0]);
-				$val = trim($two_part[1]);
-				$css_var_array[$var] = $val;
+				$res = self::get_val_var($cssvar);
+				$this->local_var[$res[0]] = $res[1];
 			}
 		}
-		return $css_var_array;
+	}
+
+	function get_val_var($line)
+	{
+		$line = trim($line);
+		$two_part = explode(":", $line);
+		$res = [
+			trim($two_part[0]),
+			trim(trim($two_part[1]), ';')
+		];
+		return $res;
 	}
 
 	function replace_val($css_line, $var, $val)
 	{
-		$var = '/*'.$var.'*/';
 		$cursor = strpos($css_line, $var);
 		while ($css_line[$cursor] != ' ')
 		{
@@ -39,11 +59,13 @@ class Cssvar
 		return $css_line;
 	}
 
-	function replace_each_var($css_line, $css_var_array)
+	function replace_each_var($css_line)
 	{
-		foreach ($css_var_array as $var => $val)
+		foreach ($this->total_var as $var => $val)
 		{
-			if (strpos($css_line, '/*'.$var.'*/') !== false)
+			$var = '/*'.$var.'*/';
+
+			if (strpos($css_line, $var) !== false)
 			{
 				$css_line = self::replace_val($css_line, $var, $val);
 			}
@@ -51,7 +73,7 @@ class Cssvar
 		return $css_line;
 	}
 
-	function translate_css($css, $css_var_array)
+	function translate_css($css)
 	{
 		$css_lines = explode("\n", $css);
 		$css = '';
@@ -59,7 +81,7 @@ class Cssvar
 		{
 			if (strpos($css_line, '/*') !== false)
 			{
-				$css_line = self::replace_each_var($css_line, $css_var_array);
+				$css_line = self::replace_each_var($css_line);
 			}
 			$css .= $css_line."\n";		
 		}
@@ -69,14 +91,15 @@ class Cssvar
 
 	function process_file($filename)
 	{
-		$css_var_array = [];
+		$this->total_var = [];
+		$this->local_var = [];
 		$css = file_get_contents($filename);
 		if (strpos($css, '$cssvar') !== false)
 		{
-			$css_var_array = self::get_css_var($css);
+			self::load_local_var($css);
 		}
-		$css_var_total = $css_var_array + $this->global_var;
-		$css = self::translate_css($css, $css_var_total);
+		$this->total_var = $this->local_var + $this->global_var;
+		$css = self::translate_css($css);
 		file_put_contents($filename, $css);
 	}
 
@@ -91,22 +114,6 @@ class Cssvar
 			else if (substr($file, 0, 3) == 'css')
 			{
 				self::process_file($file);
-			}
-		}
-	}
-
-	function get_global_var($filename)
-	{
-		$file = file_get_contents($filename);
-		foreach (explode("\n", $file) as $key => $line)
-		{
-			if (strpos($line, ':') !== false)
-			{
-				$line = trim($line);
-				$two_part = explode(":", $line);
-				$var = trim($two_part[0]);
-				$val = trim(trim($two_part[1]), ';');
-				$this->global_var[$var] = $val;
 			}
 		}
 	}
